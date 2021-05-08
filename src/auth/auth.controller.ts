@@ -1,8 +1,10 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 
 import { AuthService } from './auth.service';
+import { JoiValidationPipe } from 'pipes/joi-validation.pipe';
+import SignUpSchema from './schemas/sign-up.schema';
 
 @Controller()
 export class AuthController {
@@ -18,6 +20,7 @@ export class AuthController {
 
   @Post('/sign-up')
   @HttpCode(201)
+  @UsePipes(new JoiValidationPipe(SignUpSchema))
   async signUp(@Body() signUpDto: SignUpDto) {
     return {
       data: await this.authService.signUp(signUpDto),

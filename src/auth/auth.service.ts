@@ -20,10 +20,8 @@ export class AuthService {
     const existingUser = await this.userService.getUserByEmail(email);
     if (!existingUser) {
       throw new UnauthorizedException({
-        error: {
-          code: 'INVALID_USERNAME_OR_PASSWORD',
-          message: 'Invalid username or password. Please try again',
-        },
+        code: 'INVALID_USERNAME_OR_PASSWORD',
+        message: 'Invalid username or password. Please try again',
       });
     }
 
@@ -34,10 +32,8 @@ export class AuthService {
     );
     if (!isPasswordCorrect) {
       throw new UnauthorizedException({
-        error: {
-          code: 'INVALID_USERNAME_OR_PASSWORD',
-          message: 'Invalid username or password. Please try again',
-        },
+        code: 'INVALID_USERNAME_OR_PASSWORD',
+        message: 'Invalid username or password. Please try again',
       });
     }
 
@@ -64,10 +60,8 @@ export class AuthService {
     const existingUser = await this.userService.getUserByEmail(email);
     if (existingUser) {
       throw new BadRequestException({
-        error: {
-          code: 'USER_EMAIL_ALREADY_EXISTS',
-          message: 'Email address has already been taken by another user',
-        },
+        code: 'USER_EMAIL_ALREADY_EXISTS',
+        message: 'Email address has already been taken by another user',
       });
     }
 
@@ -90,20 +84,16 @@ export class AuthService {
       const user = this.userService.getUserByEmail(decoded.email);
       if (!user) {
         throw new UnauthorizedException({
-          error: {
-            code: 'UNAUTHORIZED',
-            message: `You're not authorized to access this endpoint`,
-          },
+          code: 'UNAUTHORIZED',
+          message: `You're not authorized to access this endpoint`,
         });
       }
 
       return decoded;
     } else {
       throw new UnauthorizedException({
-        error: {
-          code: 'UNAUTHORIZED',
-          message: `You're not authorized to access this endpoint`,
-        },
+        code: 'UNAUTHORIZED',
+        message: `You're not authorized to access this endpoint`,
       });
     }
   }
