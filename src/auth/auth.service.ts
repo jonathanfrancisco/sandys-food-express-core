@@ -70,7 +70,7 @@ export class AuthService {
 
     return this.userService.createUser({
       name,
-      email: 'email',
+      email,
       address,
       password: hashedPassword,
     });
