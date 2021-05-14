@@ -5,6 +5,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 import { JoiValidationPipe } from 'pipes/joi-validation.pipe';
 import SignUpSchema from './schemas/sign-up.schema';
+import LoginSchema from './schemas/login.schema';
 
 @Controller()
 export class AuthController {
@@ -12,6 +13,7 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(200)
+  @UsePipes(new JoiValidationPipe(LoginSchema))
   async login(@Body() loginDto: LoginDto) {
     return {
       data: await this.authService.login(loginDto),
