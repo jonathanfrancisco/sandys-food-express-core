@@ -7,15 +7,15 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 
 import { UserService } from 'src/user/user.service';
-import { LoginDto } from './dto/login.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UserService) {}
 
-  async login(loginDto: LoginDto) {
-    const { email, password: plainTextPassword } = loginDto;
+  async login(signInDto: SignInDto) {
+    const { email, password: plainTextPassword } = signInDto;
 
     const existingUser = await this.userService.getUserByEmail(email);
     if (!existingUser) {
