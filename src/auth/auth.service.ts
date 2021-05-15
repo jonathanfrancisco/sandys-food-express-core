@@ -68,19 +68,18 @@ export class AuthService {
     });
   }
 
-  async isAuthenticated(authHeaders: any) {
-    if (authHeaders && (authHeaders as string).split(' ')[1]) {
-      const token = (authHeaders as string).split(' ')[1];
-      const decoded: any = jwt.verify(token, 'cats');
-
-      const user = this.userService.getUserByEmail(decoded.email);
-      if (!user) {
-        throw new UnauthorizedException(AuthErrors.Unauthorized);
-      }
-
-      return decoded;
-    } else {
+  async isAuthenticated(token: string) {
+    if (!token) {
       throw new UnauthorizedException(AuthErrors.Unauthorized);
     }
+
+    const decoded: any = jwt.verify(token, 'cats');
+    const user = this.userService.getUserByEmail(decoded.email);
+
+    if (!user) {
+      throw new UnauthorizedException(AuthErrors.Unauthorized);
+    }
+
+    return decoded;
   }
 }

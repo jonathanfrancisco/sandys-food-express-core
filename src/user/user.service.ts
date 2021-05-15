@@ -3,7 +3,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
 
 import { User } from './user.entity';
-import { CreateUserRequestDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -20,8 +20,8 @@ export class UserService {
     return user;
   }
 
-  async createUser(createUserRequestDto: CreateUserRequestDto): Promise<User> {
-    const { name, email, address, password } = createUserRequestDto;
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const { name, email, address, password } = createUserDto;
 
     const user = new User(name, email, address, password);
 
