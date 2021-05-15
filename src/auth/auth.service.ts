@@ -6,9 +6,10 @@ import {
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 
-import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import AuthErrors from './auth.errors';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +20,7 @@ export class AuthService {
 
     const existingUser = await this.userService.getUserByEmail(email);
     if (!existingUser) {
-      throw new UnauthorizedException({
-        code: 'INVALID_USERNAME_OR_PASSWORD',
-        message: 'Invalid username or password. Please try again',
-      });
+      throw new UnauthorizedException(AuthErrors.InvalidUsernameOrPassword);
     }
 
     const { password: usersHashedPassword } = existingUser;
@@ -31,10 +29,7 @@ export class AuthService {
       usersHashedPassword,
     );
     if (!isPasswordCorrect) {
-      throw new UnauthorizedException({
-        code: 'INVALID_USERNAME_OR_PASSWORD',
-        message: 'Invalid username or password. Please try again',
-      });
+      throw new UnauthorizedException(AuthErrors.InvalidUsernameOrPassword);
     }
 
     const accessToken = jwt.sign(
@@ -59,10 +54,7 @@ export class AuthService {
 
     const existingUser = await this.userService.getUserByEmail(email);
     if (existingUser) {
-      throw new BadRequestException({
-        code: 'USER_EMAIL_ALREADY_EXISTS',
-        message: 'Email address has already been taken by another user',
-      });
+      throw new BadRequestException(AuthErrors.EmailAlreadyUsed);
     }
 
     const saltRounds = 10;
@@ -83,18 +75,12 @@ export class AuthService {
 
       const user = this.userService.getUserByEmail(decoded.email);
       if (!user) {
-        throw new UnauthorizedException({
-          code: 'UNAUTHORIZED',
-          message: `You're not authorized to access this endpoint`,
-        });
+        throw new UnauthorizedException(AuthErrors.Unauthorized);
       }
 
       return decoded;
     } else {
-      throw new UnauthorizedException({
-        code: 'UNAUTHORIZED',
-        message: `You're not authorized to access this endpoint`,
-      });
+      throw new UnauthorizedException(AuthErrors.Unauthorized);
     }
   }
 }
