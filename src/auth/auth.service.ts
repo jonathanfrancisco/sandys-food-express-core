@@ -34,6 +34,7 @@ export class AuthService {
 
     const accessToken = jwt.sign(
       {
+        id: existingUser.id,
         name: existingUser.name,
         email: existingUser.email,
         address: existingUser.address,
@@ -74,12 +75,12 @@ export class AuthService {
     }
 
     const decoded: any = jwt.verify(token, 'cats');
-    const user = this.userService.getUserByEmail(decoded.email);
+    const user = await this.userService.getUserByEmail(decoded.email);
 
     if (!user) {
       throw new UnauthorizedException(AuthErrors.Unauthorized);
     }
 
-    return decoded;
+    return true;
   }
 }
