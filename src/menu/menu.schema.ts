@@ -9,4 +9,9 @@ export default {
     price: Joi.number().min(0).required(),
     picture: Joi.string().required(),
   }),
+  updateFood: Joi.object({
+    name: Joi.string(),
+    price: Joi.number().min(0),
+    picture: Joi.string(),
+  }),
 };

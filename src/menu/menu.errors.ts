@@ -11,4 +11,8 @@ export default {
     code: 'UNAUTHORIZED',
     message: `You're not authorized to access this endpoint`,
   },
+  FoodNotFound: {
+    code: 'FOOD_NOT_FOUND',
+    message: 'Food does not exist',
+  },
 };

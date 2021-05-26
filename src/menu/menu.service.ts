@@ -14,6 +14,7 @@ import { GenerateFoodPictureUploadUrlDto } from './dto/generate-food-picture-upl
 
 import { Food } from './entities/food.entity';
 import MenuErrors from './menu.errors';
+import { UpdateFoodDto } from './dto/update-food.dto';
 
 @Injectable()
 export class MenuService {
@@ -73,6 +74,7 @@ export class MenuService {
       ownerId,
     });
 
+    // Hydrate picture field to url pointing to pre signed S3 GET url
     foods = await Promise.all(
       foods.map(async (food) => {
         return {
@@ -85,13 +87,64 @@ export class MenuService {
       }),
     );
 
-    return foods;
+    return foods.sort();
   }
 
   async deleteFood(ownerId: number, foodId: number) {
+    const food = this.foodRepository.findOne({
+      ownerId,
+      id: foodId,
+    });
+    if (!food) {
+      throw new BadRequestException(MenuErrors.FoodNotFound);
+    }
+
     await this.foodRepository.nativeDelete({
       ownerId,
       id: foodId,
     });
+  }
+
+  async updateFood(
+    ownerId: number,
+    foodId: number,
+    updateFoodDto: UpdateFoodDto,
+  ) {
+    const food = await this.foodRepository.findOne({
+      ownerId,
+      id: foodId,
+    });
+    if (!food) {
+      throw new BadRequestException(MenuErrors.FoodNotFound);
+    }
+
+    const { name, price, picture } = updateFoodDto;
+
+    await this.s3
+      .getObject({
+        Bucket: 'sandysfoodexpress',
+        Key: picture,
+      })
+      .promise()
+      .catch((e) => {
+        if (e.code === 'NoSuchKey') {
+          throw new BadRequestException(MenuErrors.InvalidFoodPicture);
+        }
+        throw new InternalServerErrorException();
+      });
+
+    await this.s3
+      .deleteObject({
+        Bucket: 'sandysfoodexpress',
+        Key: food.picture,
+      })
+      .promise();
+
+    food.name = name;
+    food.price = price;
+    food.picture = picture;
+    await this.foodRepository.persistAndFlush(food);
+
+    return food;
   }
 }

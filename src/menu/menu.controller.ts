@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  Patch,
   Post,
   UseGuards,
   UsePipes,
@@ -17,6 +18,7 @@ import { JoiValidationPipe } from 'pipes/joi-validation.pipe';
 
 import { AddFoodDto } from './dto/add-food.dto';
 import { GenerateFoodPictureUploadUrlDto } from './dto/generate-food-picture-upload-url.dto';
+import { UpdateFoodDto } from './dto/update-food.dto';
 import MenuSchema from './menu.schema';
 import { MenuService } from './menu.service';
 
@@ -64,6 +66,18 @@ export class MenuController {
   @UseGuards(AuthGuard)
   async deleteFood(@User() user: DecodedTokenUserDetails, @Param() params) {
     await this.menuService.deleteFood(user.id, params.id);
+    return {};
+  }
+
+  @Patch('/menu/foods/:id')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  async updateFood(
+    @User() user: DecodedTokenUserDetails,
+    @Param() params,
+    @Body() updateFoodDto: UpdateFoodDto,
+  ) {
+    await this.menuService.updateFood(user.id, params.id, updateFoodDto);
     return {};
   }
 }
