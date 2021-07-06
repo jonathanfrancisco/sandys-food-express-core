@@ -16,7 +16,8 @@ export class JoiValidationPipe implements PipeTransform {
     const { error } = this.schema.validate(value);
     if (error) {
       throw new BadRequestException({
-        message: 'Bad request',
+        code: 'INVALID_REQUEST',
+        message: 'Something went wrong please check your input and try again.',
         details: error.details,
       });
     }

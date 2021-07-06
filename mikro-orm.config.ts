@@ -6,7 +6,7 @@ const config = {
   host: 'localhost',
   port: 5432,
   username: 'postgres',
-  password: '1234',
+  password: 'admin',
   dbName: 'sandys_food_express',
   entities: ['dist/**/*.entity.js'],
   entitiesTs: ['src/**/*.entity.ts'],
