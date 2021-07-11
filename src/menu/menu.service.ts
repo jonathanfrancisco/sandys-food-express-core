@@ -70,7 +70,7 @@ export class MenuService {
   }
 
   async getFoods(ownerId: number) {
-    let foods = await this.foodRepository.findAll({
+    let foods = await this.foodRepository.find({
       ownerId,
     });
 
