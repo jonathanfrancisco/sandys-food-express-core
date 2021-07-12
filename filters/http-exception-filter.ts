@@ -14,7 +14,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
 
-    response.status(status).json({
+    if (status === 500) {
+      const maybeMessage = exception.getResponse()['message'];
+      return response.status(status).json({
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: maybeMessage,
+        },
+      });
+    }
+
+    return response.status(status).json({
       error: exception.getResponse(),
     });
   }
