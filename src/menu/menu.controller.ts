@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -55,9 +56,12 @@ export class MenuController {
   @Get('/menu/foods')
   @HttpCode(200)
   @UseGuards(AuthGuard)
-  async getFoods(@User() user: DecodedTokenUserDetails) {
+  async getFoods(
+    @Query('q') search: string,
+    @User() user: DecodedTokenUserDetails,
+  ) {
     return {
-      data: await this.menuService.getFoods(user.id),
+      data: await this.menuService.getFoods(user.id, search),
     };
   }
 

@@ -69,8 +69,11 @@ export class MenuService {
     return food;
   }
 
-  async getFoods(ownerId: number) {
+  async getFoods(ownerId: number, search: string) {
     let foods = await this.foodRepository.find({
+      name: {
+        $ilike: '%' + search + '%',
+      },
       ownerId,
     });
 
