@@ -1,4 +1,11 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { MenuSchedule } from './menu-schedule.entity';
 
 @Entity()
 export class Food {
@@ -23,6 +30,9 @@ export class Food {
 
   @Property()
   ownerId!: number;
+
+  @ManyToMany(() => MenuSchedule, (menuSchedule) => menuSchedule.foods)
+  menuSchedules = new Collection<MenuSchedule>(this);
 
   @Property({ nullable: true })
   createdAt: Date = new Date();

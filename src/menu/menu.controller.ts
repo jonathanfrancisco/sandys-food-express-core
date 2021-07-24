@@ -18,6 +18,7 @@ import { AuthGuard } from 'guards/auth-guard.decorator';
 import { JoiValidationPipe } from 'pipes/joi-validation.pipe';
 
 import { AddFoodDto } from './dto/add-food.dto';
+import { CreateScheduledMenuDto } from './dto/create-scheduled-menu.dto';
 import { GenerateFoodPictureUploadUrlDto } from './dto/generate-food-picture-upload-url.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import MenuSchema from './menu.schema';
@@ -82,6 +83,19 @@ export class MenuController {
     @Body() updateFoodDto: UpdateFoodDto,
   ) {
     await this.menuService.updateFood(user.id, params.id, updateFoodDto);
+    return {};
+  }
+
+  @Post('/menu')
+  @HttpCode(201)
+  @UseGuards(AuthGuard)
+  @UsePipes(new JoiValidationPipe(MenuSchema.createScheduledMenu))
+  async createScheduledMenu(
+    @User() user: DecodedTokenUserDetails,
+    @Body() createScheduledMenuDto: CreateScheduledMenuDto,
+  ) {
+    await this.menuService.createScheduledMenu(createScheduledMenuDto);
+
     return {};
   }
 }

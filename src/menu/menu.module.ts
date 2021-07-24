@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { S3Module, S3ModuleOptions } from 'nestjs-s3';
 
 import { Food } from './entities/food.entity';
+import { MenuSchedule } from './entities/menu-schedule.entity';
 import { MenuController } from './menu.controller';
 import { MenuService } from './menu.service';
 
@@ -23,7 +24,7 @@ import { MenuService } from './menu.service';
         };
       },
     }),
-    MikroOrmModule.forFeature([Food]),
+    MikroOrmModule.forFeature([Food, MenuSchedule]),
   ],
   controllers: [MenuController],
   providers: [MenuService],

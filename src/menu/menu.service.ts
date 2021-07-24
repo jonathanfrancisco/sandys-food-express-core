@@ -15,12 +15,16 @@ import { GenerateFoodPictureUploadUrlDto } from './dto/generate-food-picture-upl
 import { Food } from './entities/food.entity';
 import MenuErrors from './menu.errors';
 import { UpdateFoodDto } from './dto/update-food.dto';
+import { MenuSchedule } from './entities/menu-schedule.entity';
+import { CreateScheduledMenuDto } from './dto/create-scheduled-menu.dto';
 
 @Injectable()
 export class MenuService {
   constructor(
     @InjectRepository(Food)
     private readonly foodRepository: EntityRepository<Food>,
+    @InjectRepository(MenuSchedule)
+    private readonly menuScheduleRepository: EntityRepository<MenuSchedule>,
     @InjectS3() private readonly s3: S3,
   ) {}
 
@@ -149,5 +153,20 @@ export class MenuService {
     await this.foodRepository.persistAndFlush(food);
 
     return food;
+  }
+
+  async createScheduledMenu(createScheduledMenuDto: CreateScheduledMenuDto) {
+    const { scheduledAt, foodIds } = createScheduledMenuDto;
+
+    const foods = await this.foodRepository.find({
+      id: {
+        $in: foodIds,
+      },
+    });
+
+    const newScheduledMenu = new MenuSchedule(scheduledAt);
+    foods.forEach((food) => newScheduledMenu.foods.add(food));
+
+    await this.menuScheduleRepository.persistAndFlush(newScheduledMenu);
   }
 }

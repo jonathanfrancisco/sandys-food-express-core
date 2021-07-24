@@ -14,4 +14,8 @@ export default {
     price: Joi.number().min(0),
     picture: Joi.string(),
   }),
+  createScheduledMenu: Joi.object({
+    scheduledAt: Joi.date(),
+    foodIds: Joi.array().items(Joi.number()).min(1),
+  }),
 };
