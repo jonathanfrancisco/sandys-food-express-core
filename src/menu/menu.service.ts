@@ -1,5 +1,3 @@
-import { EntityRepository } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   BadRequestException,
   Injectable,
@@ -8,25 +6,19 @@ import {
 import { InjectS3, S3 } from 'nestjs-s3';
 import { v4 as uuid } from 'uuid';
 import * as mime from 'mime-types';
+import MenuErrors from './menu.errors';
 
 import { AddFoodDto } from './dto/add-food.dto';
 import { GenerateFoodPictureUploadUrlDto } from './dto/generate-food-picture-upload-url.dto';
-
-import { Food } from './entities/food.entity';
-import MenuErrors from './menu.errors';
 import { UpdateFoodDto } from './dto/update-food.dto';
-import { MenuSchedule } from './entities/menu-schedule.entity';
 import { CreateScheduledMenuDto } from './dto/create-scheduled-menu.dto';
+
+import Food from './models/food.model';
+import MenuSchedule from './models/menu-schedule.model';
 
 @Injectable()
 export class MenuService {
-  constructor(
-    @InjectRepository(Food)
-    private readonly foodRepository: EntityRepository<Food>,
-    @InjectRepository(MenuSchedule)
-    private readonly menuScheduleRepository: EntityRepository<MenuSchedule>,
-    @InjectS3() private readonly s3: S3,
-  ) {}
+  constructor(@InjectS3() private readonly s3: S3) {}
 
   async generateFoodPictureUploadUrl(
     generateFoodPictureUploadUrlDto: GenerateFoodPictureUploadUrlDto,
@@ -66,22 +58,21 @@ export class MenuService {
         throw new InternalServerErrorException();
       });
 
-    const food = new Food(name, price, picture, ownerId);
-
-    await this.foodRepository.persistAndFlush(food);
+    const food = await Food.query().insert({
+      name,
+      picture,
+      price,
+      owner_id: ownerId,
+    });
 
     return food;
   }
 
   async getFoods(ownerId: number, search: string) {
-    let foods = await this.foodRepository.find({
-      name: {
-        $ilike: '%' + search + '%',
-      },
-      ownerId,
-    });
+    let foods = (
+      await Food.query().where('name', 'like', `%${search}%`)
+    ).map((f) => f.toJSON());
 
-    // Hydrate picture field to url pointing to pre signed S3 GET url
     foods = await Promise.all(
       foods.map(async (food) => {
         return {
@@ -98,18 +89,15 @@ export class MenuService {
   }
 
   async deleteFood(ownerId: number, foodId: number) {
-    const food = this.foodRepository.findOne({
-      ownerId,
+    const food = await Food.query().findOne({
+      owner_id: ownerId,
       id: foodId,
     });
     if (!food) {
       throw new BadRequestException(MenuErrors.FoodNotFound);
     }
 
-    await this.foodRepository.nativeDelete({
-      ownerId,
-      id: foodId,
-    });
+    await Food.query().deleteById(food.id);
   }
 
   async updateFood(
@@ -117,8 +105,8 @@ export class MenuService {
     foodId: number,
     updateFoodDto: UpdateFoodDto,
   ) {
-    const food = await this.foodRepository.findOne({
-      ownerId,
+    const food = await Food.query().findOne({
+      owner_id: ownerId,
       id: foodId,
     });
     if (!food) {
@@ -147,26 +135,26 @@ export class MenuService {
       })
       .promise();
 
-    food.name = name;
-    food.price = price;
-    food.picture = picture;
-    await this.foodRepository.persistAndFlush(food);
+    const updatedFood = await Food.query().patchAndFetchById(food.id, {
+      name,
+      price,
+      picture,
+    });
 
-    return food;
+    return updatedFood;
   }
 
   async createScheduledMenu(createScheduledMenuDto: CreateScheduledMenuDto) {
     const { scheduledAt, foodIds } = createScheduledMenuDto;
 
-    const foods = await this.foodRepository.find({
-      id: {
-        $in: foodIds,
+    await MenuSchedule.query().insertGraph(
+      {
+        scheduled_at: new Date(scheduledAt).toISOString(),
+        foods: foodIds.map((foodId) => ({ id: foodId })),
       },
-    });
-
-    const newScheduledMenu = new MenuSchedule(scheduledAt);
-    foods.forEach((food) => newScheduledMenu.foods.add(food));
-
-    await this.menuScheduleRepository.persistAndFlush(newScheduledMenu);
+      {
+        relate: true,
+      },
+    );
   }
 }

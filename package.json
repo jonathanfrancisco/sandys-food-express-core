@@ -5,13 +5,6 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-  "mikro-orm": {
-    "useTsNode": true,
-    "configPaths": [
-      "./mikro-orm.config.ts",
-      "./dist/mikro-orm.config.js"
-    ]
-  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -28,9 +21,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@mikro-orm/core": "^4.5.3",
-    "@mikro-orm/nestjs": "^4.2.0",
-    "@mikro-orm/postgresql": "^4.5.3",
     "@nestjs/common": "^7.6.15",
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
@@ -40,8 +30,11 @@
     "bcrypt": "^5.0.1",
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
+    "knex": "0.21.21",
     "mime-types": "^2.1.30",
     "nestjs-s3": "^1.0.1",
+    "objection": "^2.2.16",
+    "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
@@ -49,7 +42,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@mikro-orm/cli": "^4.5.3",
     "@nestjs/cli": "^7.6.0",
     "@nestjs/schematics": "^7.3.0",
     "@nestjs/testing": "^7.6.15",

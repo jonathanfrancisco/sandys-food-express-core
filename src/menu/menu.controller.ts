@@ -17,11 +17,13 @@ import { User } from 'decorators/user.decorator';
 import { AuthGuard } from 'guards/auth-guard.decorator';
 import { JoiValidationPipe } from 'pipes/joi-validation.pipe';
 
+import MenuSchema from './menu.schema';
+
 import { AddFoodDto } from './dto/add-food.dto';
 import { CreateScheduledMenuDto } from './dto/create-scheduled-menu.dto';
 import { GenerateFoodPictureUploadUrlDto } from './dto/generate-food-picture-upload-url.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
-import MenuSchema from './menu.schema';
+
 import { MenuService } from './menu.service';
 
 @Controller()
