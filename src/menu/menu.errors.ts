@@ -15,4 +15,8 @@ export default {
     code: 'FOOD_NOT_FOUND',
     message: 'Food does not exist',
   },
+  FoodInUseInMenu: {
+    code: 'FOOD_IN_USE_IN_MENU',
+    message: 'Food is currently scheduled in one or more menus you have created'
+  }
 };

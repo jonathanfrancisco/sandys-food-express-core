@@ -97,7 +97,14 @@ export class MenuService {
       throw new BadRequestException(MenuErrors.FoodNotFound);
     }
 
-    await Food.query().deleteById(food.id);
+    try {
+      await Food.query().deleteById(food.id);
+    } catch(error: any) {
+      if(error?.name === 'ForeignKeyViolationError') {
+        throw new BadRequestException(MenuErrors.FoodInUseInMenu);
+        
+      }
+    }
   }
 
   async updateFood(
