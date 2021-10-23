@@ -70,9 +70,12 @@ export class MenuService {
 
   async getFoods(ownerId: number, search: string) {
     let foods = (
-      await Food.query().where('name', 'like', `%${search}%`)
+      await Food.query()
+      .where('name', 'like', `%${search || ''}%`)
+      .where('owner_id', ownerId)
+      
     ).map((f) => f.toJSON());
-
+    
     foods = await Promise.all(
       foods.map(async (food) => {
         return {
