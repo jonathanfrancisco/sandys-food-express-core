@@ -1,5 +1,9 @@
 import Knex from 'knex';
 
+import {config} from 'dotenv';
+config({ path: '.env' })
+
+
 interface IKnexConfig {
   [key: string]: Knex.Config;
 }
@@ -10,9 +14,9 @@ const knexConfig: IKnexConfig = {
     connection: {
       host: '127.0.0.1',
       port: 5432,
-      user: 'postgres',
-      password: 'admin',
-      database: 'sandys_food_express',
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
     },
     pool: {
       min: 2,
@@ -24,5 +28,6 @@ const knexConfig: IKnexConfig = {
     },
   },
 };
+
 
 export default knexConfig;
