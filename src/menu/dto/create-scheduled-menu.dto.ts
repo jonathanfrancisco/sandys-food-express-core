@@ -1,4 +1,4 @@
 export class CreateScheduledMenuDto {
-  scheduledAt: Date;
-  foodIds: number[];
+  readonly scheduledAt: Date;
+  readonly foodIds: number[];
 }
