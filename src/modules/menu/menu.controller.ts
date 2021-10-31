@@ -12,10 +12,10 @@ import {
   UsePipes,
 } from '@nestjs/common';
 
-import { DecodedTokenUserDetails } from 'common/decoded-token-user';
-import { User } from 'decorators/user.decorator';
-import { AuthGuard } from 'guards/auth-guard.decorator';
-import { JoiValidationPipe } from 'pipes/joi-validation.pipe';
+import { DecodedTokenUserDetails } from 'src/common/decoded-token-user';
+import { User } from 'src/decorators/user.decorator';
+import { AuthGuard } from 'src/guards/auth-guard.decorator';
+import { JoiValidationPipe } from 'src/pipes/joi-validation.pipe';
 
 import MenuSchema from './menu.schema';
 

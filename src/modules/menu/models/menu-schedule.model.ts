@@ -1,6 +1,6 @@
 import { Model } from 'objection';
 import * as knex from 'knex';
-import knexfile from '../../../knexfile';
+import knexfile from '../../../../knexfile';
 import Food from './food.model';
 
 const knexInstance = knex(knexfile.development);

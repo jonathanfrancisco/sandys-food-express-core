@@ -6,16 +6,17 @@ import {
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 
-import { SignInDto } from './dto/sign-in.dto';
-import { SignUpDto } from './dto/sign-up.dto';
+import { SignInRequestDto } from './dto/request/sign-in.request.dto';
+import { SignUpRequestDto } from './dto/request/sign-up.request.dto';
 import AuthErrors from './auth.errors';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/modules/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UserService) {}
 
-  async login(signInDto: SignInDto) {
+  async login(signInDto: SignInRequestDto) {
+  
     const { email, password: plainTextPassword } = signInDto;
 
     const existingUser = await this.userService.getUserByEmail(email);
@@ -50,7 +51,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpDto: SignUpDto) {
+  async signUp(signUpDto: SignUpRequestDto) {
     const { name, email, address, password } = signUpDto;
 
     const existingUser = await this.userService.getUserByEmail(email);
