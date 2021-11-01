@@ -16,6 +16,8 @@ import { CreateScheduledMenuDto } from './dto/create-scheduled-menu.dto';
 import Food from './models/food.model';
 import MenuSchedule from './models/menu-schedule.model';
 
+import * as dayjs from 'dayjs';
+
 @Injectable()
 export class MenuService {
   constructor(@InjectS3() private readonly s3: S3) {}
@@ -69,12 +71,29 @@ export class MenuService {
   }
 
   async getFoods(ownerId: number, search: string) {
+    const todayDateTime = dayjs();
+    const endOfTodayDateTime = todayDateTime.endOf('day');
+    
     let foods = (
       await Food.query()
       .where('name', 'like', `%${search || ''}%`)
       .where('owner_id', ownerId)
+      .withGraphFetched('menuSchedules')
+    ).map((f) => {
+      const foodJson = f.toJSON();
+      const { menuSchedules } = foodJson;
+      delete foodJson.menuSchedules;
+
+      const foodMenuSheduleToday = menuSchedules.find(menuSchedule => {
+        return todayDateTime.isAfter(menuSchedule.scheduled_at) && dayjs(menuSchedule.scheduled_at).isBefore(endOfTodayDateTime);
+      });
       
-    ).map((f) => f.toJSON());
+      return {
+        ...foodJson,
+        is_available_today: foodMenuSheduleToday ? true : false,
+      };
+    });
+    
     
     foods = await Promise.all(
       foods.map(async (food) => {
@@ -159,7 +178,7 @@ export class MenuService {
 
     await MenuSchedule.query().insertGraph(
       {
-        scheduled_at: new Date(scheduledAt).toISOString(),
+        scheduled_at: scheduledAt.toString(),
         foods: foodIds.map((foodId) => ({ id: foodId })),
       },
       {
