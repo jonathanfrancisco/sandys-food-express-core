@@ -72,7 +72,7 @@ export class MenuService {
 
   async getFoods(ownerId: number, search: string) {
     const todayDateTime = dayjs();
-    const endOfTodayDateTime = todayDateTime.endOf('day');
+
     
     let foods = (
       await Food.query()
@@ -85,7 +85,9 @@ export class MenuService {
       delete foodJson.menuSchedules;
 
       const foodMenuSheduleToday = menuSchedules.find(menuSchedule => {
-        return todayDateTime.isAfter(menuSchedule.scheduled_at) && dayjs(menuSchedule.scheduled_at).isBefore(endOfTodayDateTime);
+        const endOfScheduledDateTime = dayjs(menuSchedule.scheduled_at).endOf('day');
+        
+        return todayDateTime.isAfter(menuSchedule.scheduled_at) && dayjs().isBefore(endOfScheduledDateTime);
       });
       
       return {
